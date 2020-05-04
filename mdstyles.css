@@ -1,0 +1,16 @@
+
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #454BE2;
+	font-size: inherit;
+}
+
+p em {
+    color: #ff4d6c;
+}
+
+pre {
+	color: #5c1a1a;
+}
+

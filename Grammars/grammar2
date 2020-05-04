@@ -1,0 +1,355 @@
+# Symbols in the grammar are case-sensitive.
+#
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+#
+# This convention just makes grammars more readable to humans.  Thus:
+#
+#    - When *you* are writing grammars, you should
+#      follow this convention unless you have a good reason not to.
+#
+#    - But the  *program* should still work with grammars that don't
+#      follow this convention.  So how can the program reliably tell
+#      the difference between terminal and nonterminal symbols?  If
+#      there is at least one rule for rewriting a symbol, then that
+#      symbol is a nonterminal and should be rewritten.
+#######################
+
+# Rules for creating full sentences.
+
+1	ROOT	S .
+1	ROOT	S !
+1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    NP = noun phrase
+#    PNP = "noun and noun .." phrase
+#    VP = verb phrase
+#    VPS = verb phrase after plural subject
+#    PVPN = "verb and verb .." phrase (with a noun at the end)
+#    PVPU = "verb and verb .." phrase (without a noun at the end)
+#    PP = prepositional phrase
+#    Det = determiner (sometimes called "article")
+#    Prep = preposition
+#    Adj = adjective
+#    Noun = a Noun or an adjective* with noun
+#    That = "that" and then a new sentence - S
+
+4	S	NP VP
+3	S	PNP VPS
+
+4	S	NP Vbz Adj     # allowing sentences like "Sally is lazy"
+2	S	PNP Vbzs Adj    # allowing sentences like "Sally and Morty are lazy"
+2	S	NP Vbz NP      # allowing sentences like "Sally is a table"
+
+2	S	it It NP That  # allowing sentences like "It perplexed the president that..."
+
+#######################################
+#               NP stuff              #
+#######################################
+
+4	NP	Det Noun
+1	NP	NP PP
+
+4	NP	Nnp            # names
+
+1	PP	Prep NP
+2	Noun	Adj Noun
+
+# -- for plural noun --
+1	PNP	PNP1             # plural Noun: ("Sally and the president...")
+1	PNP1	PNP2 NPNPP   #
+1	PNP2	PNP1 and
+2	PNP2	NPNPP and
+
+1	NPNPP	Nnp
+1	NPNPP	Det Noun
+
+#######################################
+#               VP stuff              #
+#######################################
+
+3	VP	VPN                 # verb & noun
+3	VP	VPO                 # verb "on/at/.." & noun
+3	VP	VPU                 # verb alone
+2	VP	PVPN                # verb "and" verb.. & noun
+2	VP	PVPU                # verb "and" verb..
+1	VP	VPNT                # verb & noun "that" -> ...
+1	VP	VPUT                # verb "that" -> ...
+
+1	VPN	VERB NP
+1	VPO	OVERB NP
+
+2	VPU	UVERB
+2	VPU	UVERB Adv           # ("he worked quickly")
+1	VPU	UVERB PP            # ("he sighed under the table")
+1	VPU	UVERB Adv PP        # ("he worked quickly under the table")
+
+1	VPNT	TVERB NP That   # ("he told Sally that --new sentence--")
+1	VPUT	UTVERB That     # ("he thought that --new sentence--")
+
+# ------- Plural noun causes "are" instead of "is" -----
+#    > copy the above rules and add "S" to end of all veriables
+
+3	VPS	VPNS                 # verb & noun
+3	VPS	VPOS                 # verb "on/at/.." & noun
+3	VPS	VPUS                 # verb alone
+2	VPS	PVPNS                # verb "and" verb.. & noun
+2	VPS	PVPUS                # verb "and" verb..
+1	VPS	VPNTS                # verb & noun "that" -> ...
+1	VPS	VPUTS                # verb "that" -> ...
+
+1	VPNS	VERBS NP
+1	VPOS	OVERBS NP
+
+2	VPUS	UVERBS
+2	VPUS	UVERBS Adv           # ("he worked quickly")
+1	VPUS	UVERBS PP            # ("he sighed under the table")
+1	VPUS	UVERBS Adv PP        # ("he worked quickly under the table")
+
+1	VPNTS	TVERBS NP That   # ("he told Sally that --new sentence--")
+1	VPUTS	UTVERBS That     # ("he thought that --new sentence--")
+
+# ---------------- End of plural Nouns ----------------
+# --------------- Helpers for combining verbs: ------------------
+
+1	PVPN	PVP1            # plural ("wanted and ate a sandwich")
+1	PVP1	PVP2 VPN        #
+2	PVP2	PVP1 and        # ("..and wanted the table and..")
+1	PVP2	PVP2 PVP2       # combine above
+4	PVP2	VERB and        # stop
+
+1	PVPU	PVPU1            # plural ("worked and sighed")
+1	PVPU1	PVPU2 VPU        #
+1	PVPU2	PVPU1 and
+2	PVPU2	UVERB and
+
+# not allowing present progressive here - too bizarre
+1	PVPNS	PVP1S            # plural ("wanted and ate a sandwich")
+1	PVP1S	PVP2S Verb NP    #
+2	PVP2S	PVP1S and
+1	PVP2S	PVP2S PVP2S
+4	PVP2S	Verb and
+
+1	PVPUS	PVPU1S            # plural ("worked and sighed")
+1	PVPU1S	PVPU2S UVerb      #
+1	PVPU2S	PVPU1S and
+2	PVPU2S	UVerb and
+
+# ---------------- End of Helpers -----------------------------
+
+1	That	that S
+
+1	VERB	Vbz VerbG
+1	VERB	Verb
+1	UVERB	Vbz UVerbG
+1	UVERB	UVerb
+1	TVERB	Vbz TVerbG
+1	TVERB	TVerb
+1	UTVERB	Vbz UTVerbG
+1	UTVERB	UTVerb
+1	OVERB	Vbz OVerbG
+1	OVERB	OVerb
+
+1	VERBS	Vbzs VerbG
+1	VERBS	Verb
+1	UVERBS	Vbzs UVerbG
+1	UVERBS	UVerb
+1	TVERBS	Vbzs TVerbG
+1	TVERBS	TVerb
+1	UTVERBS	Vbzs UTVerbG
+1	UTVERBS	UTVerb
+1	OVERBS	Vbzs OVerbG
+1	OVERBS	OVerb
+
+3	Adj	RB Adj
+3	Adv	RB Adv
+
+#===========================================================================
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of
+# terminals, like "chief of staff") is called a "preterminal."  Notice
+# that a preterminal is a special kind of nonterminal.
+#===========================================================================
+
+#######################################
+#               Verbs                 #
+#######################################
+
+# --------------------------------------
+#   Verb - a verb which takes an object (NP)
+# --------------------------------------
+
+1	Verb	ate
+1	Verb	drank
+1	Verb	kissed
+1	Verb	understood
+1	Verb	pickled
+1	Verb	wanted
+1	Verb	broke
+
+# --------------------------------------
+#   TVerb - verb which takes an object AND connect with "that" (NP that)
+# --------------------------------------
+
+1	TVerb	told
+
+# --------------------------------------
+#   UVerb - verb which doesn't take an object ( )
+# --------------------------------------
+
+1	UVerb   worked
+1	UVerb   sighed
+
+# --------------------------------------
+#   UTVerb - verb which doesn't take an object AND connect with "that" (that)
+# --------------------------------------
+
+2	UTVerb	thought
+2	UTVerb	learned
+1	UTVerb	understood
+
+# --------------------------------------
+#   OVerb - verb which doesn't take an object but like "worked on 'something'"
+# --------------------------------------
+
+1	OVerb	worked on
+1	OVerb	thought about
+1	OVerb	laughed at
+
+# --------------------------------------
+# * All previous verbs with same rules but in progressive tense
+# --------------------------------------
+
+1	VerbG	eating
+1	VerbG	drinking
+1	VerbG	kissing
+1	VerbG	understanding
+1	VerbG	pickling
+1	VerbG	wanting
+1	VerbG	breaking
+
+1	TVerbG	telling
+
+1	UVerbG	working
+
+2	UTVerbG	thinking
+2	UTVerbG	learning
+1	UTVerbG	understanding
+
+1	OVerbG	working on
+1	OVerbG	thinking about
+1	OVerbG	laughing at
+
+#######################################
+#               Nouns                 #
+#######################################
+
+2	Det	the
+2	Det	a
+1	Det	every
+
+1	Noun	president
+1	Noun	sandwich
+1	Noun	pickle
+1	Noun	chief of staff
+1	Noun	floor
+1	Noun	table
+1	Noun	proposal
+1	Noun	desk
+
+# -- names --
+
+1	Nnp	Sally
+1	Nnp	Rick
+1	Nnp	Morty
+0.5	Nnp	Jerry         # Jerry is less
+1	Nnp	Uriel
+1	Nnp	Mendi
+
+#######################################
+#             Adjectives              #
+#######################################
+
+1	Adj	fine
+1	Adj	delicious
+1	Adj	perplexed
+1	Adj	pickled
+1	Adj	lazy
+
+2	Adv	quickly
+2	Adv	furiously
+1	Adv	quietly
+1	Adv	brutally
+
+
+#######################################
+#                Other                #
+#######################################
+
+1	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+1	Conj	and
+
+1	Pronoun	he
+1	Pronoun	she
+
+1	RB	very
+
+1	Vbz	is
+1	Vbzs	are     # Plural
+
+1	It	perplexed
+1	It	bothered
+1	It	tickled
+
+
+# """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+# The following sentences should be allowed:
+#
+# NNP Verb Det Noun
+# Sally ate a sandwich
+# S(NP(Nnp(Sally)) VP(VPN(VERB(Verb(ate))) NP(Det(the) Noun(sandwich))))
+#
+# NNP Conj Det Noun Verb Conj Verb Det Noun
+# Sally and the president wanted and ate a sandwich
+# S(PNP(PNP1(PNP2(NPNPP(Nnp) "and") NPNPP(Det Noun))) VPS(PVPNS(PVP1S(PVP2S(Verb "and") Verb NP(Det Noun)))))
+#
+# the president sighed
+# S(NP(Det Noun) VP(VPU(UVERB)))
+#
+# Det Noun Verb IN Det Noun Verb
+# the president thought that a sandwich sighed
+# S(NP(Det Noun) VP(VPUT(UTVERB That(that S(NP(Det Noun) VP(VPU))))))
+#
+# Pronoun Adj Det Noun IN Det Noun Verb NNP
+# it perplexed the president that a sandwich ate Sally
+# S(it It NP(Det Noun) That(NP(Det Noun) VP(VPN(VERB NP(Nnp)))))
+#
+# Det RB RB RB Adj Noun Verb Det Noun
+# the very very very perplexed president ate a sandwich
+# S(NP(Det Noun(Adj(RB(RB Adj)..) Noun)) VP(VPN(VERB NP)))
+#
+# the president worked on every proposal on the desk
+# S(NP(Det Noun) VP(VPO(OVERB NP(NP(Det Noun) PP(Prep NP(Det Noun))))))
+#
+# NNP  VBZ Adj
+# Sally is lazy .
+# S(NP(Nnp) Vbz Adj)
+#
+# NNP  VBZ  VBG   Det Noun
+# Sally is eating a sandwich.
+# S(NP(NNP) VP(VPN(VERB(VBZ VerbG) NP(Det Noun)))
+#
+# Det Noun      Verb    IN   NNP  VBZ Det Noun
+# the president thought that Sally is a sandwich .
+# S(NP(Det Noun) VP(VPUT(UTVERB(UTVerb) That(that S(NP Vbz NP)))))
+#
+# """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

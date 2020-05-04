@@ -1,0 +1,64 @@
+ > "is it true that every pickle worked on __he__ ?"
+ ** Solved by adding the NP'
+
+ > Very few sentences with present progressive
+ ** Solved by changing weight
+
+ > "I kissed every sandwich __that__ a delicious pickle and Sally is working under the table !"
+ ** Solved by: Not putting "that" before S (move it before VP)
+               Moreover - only "and" can be between both: VP and NP
+
+ > "is it true that I worked __that__ is working under Sally"
+ ** This is related to the one above. "that" is very problematic:
+    VP-NP  - "I thought that Sally is working"
+    VPG-NP - "I am thinking that Sally is working"
+    NP-NP  - "I kissed every pickle that Sally ate"
+    NP-VP  - "I kissed Sally that worked under the table"
+    VP-VPG - "he thought that working is bad "
+    We decided to only allow [Verb that NP']
+
+ > "it understood that she !"
+ ** Solved:  [Verb that S]
+]
+
+NOT PROBLEMS:
+  I sighed on a pickle !
+
+  is it true that every delicious chief of staff under the president ate the president with a pickle
+   and is working ?
+
+  the Very delicious sandwich sighed on a pickle and is understanding that a table and Rick worked
+  and ate Uriel .
+
+  I wanted every president and the Very fine floor sighed and is thinking that the delicious floor
+  is understanding that it pickled every chief of staff under Rick .
+
+  is it true that a lazy lazy perplexed lazy president is Jerry ?
+
+  Sally is a Very fine table !
+
+
+
+  (ROOT is it true that (S
+                        (S (S (NP' (NP (Det a)
+                                       (Noun (Adj delicious)
+                                             (Noun (Adj (RB Very)
+                                                        (Adj fine))
+                                                   (Noun president)))))
+                              (VP (Verb (VBZ is)
+                                        (VerbG understanding))
+                                  (NP (Det every)
+                                      (Noun floor))))
+                           (Conj and)
+                           (S (NP' (Pronoun she))
+                              (VBZ is)
+                              (Adj (RB Very)
+                                   (Adj (RB Very)
+                                        (Adj (RB Very)
+                                             (Adj (RB Very)
+                                                  (Adj perplexed)))))))
+                        (Conj because)
+                        (S (NP' (Pronoun it))
+                           (VBZ is)
+                           (Adj delicious)))
+                      ?)
